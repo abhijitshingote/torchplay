@@ -32,12 +32,13 @@ def say(objs):
     myobj.save("detected.mp3")
     os.system("mpg321 detected.mp3")
 
+# Get model and transforms
 weights = FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT
+preprocess = weights.transforms()
 model = fasterrcnn_resnet50_fpn_v2(weights=weights, box_score_thresh=0.9)
 model.eval()
 
-preprocess = weights.transforms()
-
+# cv2 magic
 cap = cv.VideoCapture(0)
 cap.set(cv.CAP_PROP_FRAME_WIDTH,100)
 cap.set(cv.CAP_PROP_FRAME_HEIGHT,50)
@@ -51,11 +52,11 @@ while True:
     if not ret:
         print("Can't receive frame (stream end?). Exiting ...")
         break
-    gray,labels=get_pred(frame)
+    pred,labels=get_pred(frame)
     if counter%10==0:
         say(labels)
 
-    cv.imshow('frame', gray)
+    cv.imshow('frame', pred)
     if cv.waitKey(1) == ord('q'):
         break
     counter+=1
